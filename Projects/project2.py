@@ -16,14 +16,14 @@ def get_words(text):
     return words
 
 
-def make_count(words):
-    count = {}
-    for w in words:
-        if w in count:
-            count[w] = count[w] + 1
+def fre_count(words):
+    fre_count = {}
+    for i in words:
+        if i in fre_count:
+            fre_count[i] = fre_count[i] + 1
         else:
-            count[w] = 1
-    return count
+            fre_count[i] = 1
+    return fre_count
 
 
 
@@ -35,24 +35,24 @@ def word_to_number(word):
 
 
 def make_simhash(counter):
-    bucket = [0] * 64   # 64 empty boxes
+    lst = [0] * 64  
 
-    for word in counter:
-        freq = counter[word]
-        h = word_to_number(word)
+    for j in counter:
+        freq = counter[j]
+        h = word_to_number(j)
 
         bit = 0
         while bit < 64:
             if (h >> bit) & 1 == 1:
-                bucket[bit] = bucket[bit] + freq
+                lst[bit] = lst[bit] + freq
             else:
-                bucket[bit] = bucket[bit] - freq
+                lst[bit] = lst[bit] - freq
             bit = bit + 1
 
     simhash = 0
     i = 0
     while i < 64:
-        if bucket[i] >= 0:
+        if lst[i] >= 0:
             simhash = simhash | (1 << i)
         i = i + 1
 
