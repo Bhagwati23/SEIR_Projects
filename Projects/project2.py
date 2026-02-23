@@ -27,12 +27,42 @@ def make_count(words):
 
 
 
-def common_words(c1, c2):
-    common = 0
-    for word in c1:
-        if word in c2:
-            common = common + 1
-    return common
+def word_to_number(word):
+    total = 0
+    for ch in word:
+        total = total + ord(ch)
+    return total
+
+
+def make_simhash(counter):
+    bucket = [0] * 64   # 64 empty boxes
+
+    for word in counter:
+        freq = counter[word]
+        h = word_to_number(word)
+
+        bit = 0
+        while bit < 64:
+            if (h >> bit) & 1 == 1:
+                bucket[bit] = bucket[bit] + freq
+            else:
+                bucket[bit] = bucket[bit] - freq
+            bit = bit + 1
+
+    simhash = 0
+    i = 0
+    while i < 64:
+        if bucket[i] >= 0:
+            simhash = simhash | (1 << i)
+        i = i + 1
+
+    return simhash
+
+
+
+def compare(a, b):
+    both = a & b
+    return bin(both).count("1")
 
 
 
@@ -48,8 +78,11 @@ words2 = get_words(text2)
 count1 = make_count(words1)
 count2 = make_count(words2)
 
-same = common_words(count1, count2)
+simhash1 = make_simhash(count1)
+simhash2 = make_simhash(count2)
 
-print("Total unique words in page 1:", len(count1))
-print("Total unique words in page 2:", len(count2))
-print("Common words:", same)
+same_bits = compare(simhash1, simhash2)
+
+print("Simhash 1:", simhash1)
+print("Simhash 2:", simhash2)
+print("Common bits:", same_bits)
